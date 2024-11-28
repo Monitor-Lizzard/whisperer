@@ -13,8 +13,7 @@ defmodule Whisperer.Agents.TechAgent do
   end
 
   @impl true
-  def process_message(message, _user_id, _session_id, context) do
-    conversation_history = context.conversation_history
+  def process_message(message, context, conversation_history) do
     history_context = format_conversation_history(conversation_history)
 
     prompt = """
@@ -23,6 +22,9 @@ defmodule Whisperer.Agents.TechAgent do
 
     You are a technical expert. Please respond to the following query:
     #{message}
+
+    This is context you might need.
+    #{context}
     """
 
     Client.generate(prompt)

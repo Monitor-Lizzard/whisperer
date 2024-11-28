@@ -18,8 +18,9 @@ defmodule Whisperer.Orchestrator.Supervisor do
   @doc """
   Starts a new orchestrator process for a session.
   """
-  def start_orchestrator(session_id) do
-    child_spec = {Whisperer.Orchestrator, name: via_tuple(session_id)}
+  @spec start_orchestrator(binary(), map()) :: :ok
+  def start_orchestrator(session_id, context) do
+    child_spec = {Whisperer.Orchestrator, name: via_tuple(session_id), context: via_tuple(context)}
     DynamicSupervisor.start_child(__MODULE__, child_spec)
   end
 
@@ -38,7 +39,7 @@ defmodule Whisperer.Orchestrator.Supervisor do
       [{pid, _}] ->
         {:ok, pid}
       [] ->
-        start_orchestrator(session_id)
+        raise "Orchestrator not found for session #{session_id}"
     end
   end
 end

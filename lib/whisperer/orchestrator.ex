@@ -5,25 +5,7 @@ defmodule Whisperer.Orchestrator do
   """
 
   use GenServer
-  alias Whisperer.{Agent, Classifier}
-
-  @type conversation :: %{
-    role: :user | :assistant,
-    content: String.t(),
-    agent_id: Agent.agent_id() | nil,
-    timestamp: DateTime.t()
-  }
-
-  @type conversations :: %{
-    {Agent.user_id(), Agent.session_id()} => [conversation]
-  }
-
-  @type t :: %__MODULE__{
-    agents: %{Agent.agent_id() => module()},
-    conversations: conversations
-  }
-
-  defstruct agents: %{}, conversations: %{}
+  alias Whisperer.{Agent, Classifier, Orchestrator.State}
 
   # Client API
 
@@ -77,8 +59,8 @@ defmodule Whisperer.Orchestrator do
   # Server Callbacks
 
   @impl true
-  def init(_opts) do
-    {:ok, %__MODULE__{}}
+  def init(opts) do
+    {:ok, %State{context: Keyword.get(opts, :context, %{})}}
   end
 
   @impl true
@@ -88,24 +70,28 @@ defmodule Whisperer.Orchestrator do
   end
 
   @impl true
-  def handle_call({:add_agent, agent_module}, _from, state) do
-    characteristics = agent_module.characteristics()
-    new_state = %{state | agents: Map.put(state.agents, characteristics.id, agent_module)}
-    {:reply, :ok, new_state}
+  def handle_call({:add_agent, agent_module}, _from, %{agents: agents, characteristics: characteristics} = state) do
+    agent_characteristics = agent_module.characteristics()
+
+    state
+    |> Map.put(:agents, Map.put(state.agents, characteristics.id, agent_module))
+    |> Map.put(:characteristics, [agent_characteristics | characteristics])
+    |> then(&{:reply, :ok, &1})
   end
 
   @impl true
-  def handle_call({:process_message, message, user_id, session_id}, _from, state) do
-    # Step 1: Get agent characteristics for classification
-    agent_characteristics = get_agent_characteristics(state)
+  def handle_call({:process_message, message}, _from, state) do
+    # Step 1: Add user message to history first
+    state = add_message_internal(state, user_id, session_id, :user, message, nil)
+
+    # Step 2: Get agent characteristics for classification
     conversation_history = get_conversation_internal(state, user_id, session_id)
 
-    # Step 2: Classify the message
-    with {:ok, agent_id} <- Classifier.classify(message, user_id, session_id, conversation_history, agent_characteristics),
+    # Step 3: Classify the message
+    with {:ok, agent_id} <- Classifier.classify(message, user_id, session_id, conversation_history, state.characteristics),
          agent_module when not is_nil(agent_module) <- Map.get(state.agents, agent_id) do
 
-      # Step 3: Add user message to history first
-      state = add_message_internal(state, user_id, session_id, :user, message, nil)
+
 
       # Step 4: Process message with selected agent
       case agent_module.process_message(message, user_id, session_id, %{
@@ -140,8 +126,7 @@ defmodule Whisperer.Orchestrator do
     |> Enum.reverse() # Return messages in chronological order
   end
 
-  defp add_message_internal(state, user_id, session_id, role, content, agent_id) do
-    conversation_key = {user_id, session_id}
+  defp add_message(state, role, content, agent_id \\ nil) do
     message = %{
       role: role,
       content: content,
