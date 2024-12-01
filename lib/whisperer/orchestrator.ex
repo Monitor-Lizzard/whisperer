@@ -107,8 +107,6 @@ defmodule Whisperer.Orchestrator do
         [message | _] = state.conversations
         neighbors = Map.get(graph, current_node, [])
 
-        IO.inspect(current_node)
-        IO.inspect(state)
         {:ok, response} =
           state.agents[current_node].process_message(message, state.context, state.conversations)
 
