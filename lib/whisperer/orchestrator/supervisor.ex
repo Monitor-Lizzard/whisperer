@@ -18,7 +18,8 @@ defmodule Whisperer.Orchestrator.Supervisor do
   @doc """
   Starts a new orchestrator process for a session.
   """
-  @spec start_orchestrator(binary(), module(), map()) :: :ok
+  @spec start_orchestrator(binary(), module(), map()) ::
+          :ignore | {:error, any()} | {:ok, pid()} | {:ok, pid(), any()}
   def start_orchestrator(session_id, sequencer, context) do
     child_spec =
       {Whisperer.Orchestrator,
