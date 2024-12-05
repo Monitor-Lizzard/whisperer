@@ -3,9 +3,8 @@ defmodule Whisperer.Sequencer do
   Handles Sequencing of agents based on input.
   """
 
-  alias Whisperer.{Agent, Sequence}
-  alias Whisperer.Orchestrator.State
+  alias Whisperer.{Agent, Message, Sequence}
 
-  @callback create_sequence(State.content(), [Agent.agent_characteristics()], [State.message()]) ::
+  @callback create_sequence(Message.content(), [Agent.agent_characteristics()], [Message.t()]) ::
               {:ok, Sequence.t()} | {:error, term()}
 end

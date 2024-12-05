@@ -11,9 +11,6 @@ defmodule Whisperer.Agent do
   @type context :: map()
   @type conversation_history :: [Message.t()]
 
-  # TODO: Come up with an engine that comes up with this
-  @type llm :: LangChain.ChatModels.t() | nil
-
   @type agent_characteristics :: %{
           id: agent_id,
           name: agent_name,

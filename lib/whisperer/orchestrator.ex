@@ -43,7 +43,7 @@ defmodule Whisperer.Orchestrator do
   @doc """
   Gets the conversation history for a user's session.
   """
-  @spec get_conversation(binary()) :: [State.message()]
+  @spec get_conversation(binary()) :: [Message.t()]
   def get_conversation(session_id) do
     with {:ok, orchestrator} <- Supervisor.get_orchestrator(session_id) do
       GenServer.call(orchestrator, {:get_conversation})
@@ -64,6 +64,7 @@ defmodule Whisperer.Orchestrator do
         %{agents: agents, characteristics: characteristics} = state
       ) do
     agent_characteristics = agent_module.characteristics()
+
     state
     |> Map.put(:agents, Map.put(agents, agent_characteristics.id, agent_module))
     |> Map.put(:characteristics, [agent_characteristics | characteristics])
@@ -75,7 +76,8 @@ defmodule Whisperer.Orchestrator do
     with %State{} = state <- add_message(state, :user, user_input),
          {:ok, %Sequence{} = sequence} <-
            state.sequencer.create_sequence(user_input, state.characteristics, state.conversations),
-         {:ok, %_{conversations: [response | _]} = state} <- bfs(state, sequence.connections, [sequence.start_agent], MapSet.new()) do
+         {:ok, %_{conversations: [response | _]} = state} <-
+           bfs(state, sequence.connections, [sequence.start_agent], MapSet.new()) do
       {:reply, {:ok, response}, state}
     end
   end

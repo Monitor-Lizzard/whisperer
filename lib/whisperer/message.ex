@@ -8,7 +8,7 @@ defmodule Whisperer.Message do
   @type t :: %__MODULE__{
           role: :user | :assistant | :system,
           content: content(),
-          agent_id: Agent.agent_id() | nil,
+          agent_id: Whisperer.Agent.agent_id() | nil,
           timestamp: DateTime.t()
         }
 
