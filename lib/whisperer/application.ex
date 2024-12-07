@@ -1,4 +1,5 @@
 defmodule Whisperer.Application do
+  @moduledoc false
   use Application
 
   @impl true

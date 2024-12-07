@@ -7,7 +7,36 @@ on:
       - main
 
 jobs:
-  mix_test:
+  lint: 
+    name: Lints the codebase
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: 1.17.2
+          otp-version: 27.0
+
+      - name: Restore deps and _build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: deps-${{ runner.os }}-27-1.17.2-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            deps-${{ runner.os }}-27-1.17.2
+
+      - name: Install dependencies
+        run: mix deps.get
+      
+      - name: Run linter
+        run: mix lint
+  test:
     name: mix test (OTP ${{matrix.otp}} | Elixir ${{matrix.elixir}})
 
     strategy:
@@ -86,7 +115,7 @@ jobs:
     name: coverage report
 
     runs-on: ubuntu-latest
-    needs: [mix_test]
+    needs: [test]
 
     steps:
       - name: Checkout

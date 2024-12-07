@@ -19,8 +19,8 @@ defmodule Whisperer do
 
   ## Examples
 
-      iex> Whisperer.start_session("123", MyApp.Sequencer.Basic, %{})
-      {:ok, pid}
+      {:ok, _pid} = Whisperer.start_session("123", MyApp.Sequencer.Basic, %{})
+
   """
   @spec start_session(String.t(), module(), map()) ::
           :ignore | {:error, any()} | {:ok, pid()} | {:ok, pid(), any()}
@@ -36,7 +36,8 @@ defmodule Whisperer do
 
   ## Examples
 
-      iex> Whisperer.add_agent("123", MyApp.Agent)
+      {:ok, _pid} = Whisperer.start_session("123", MyApp.Sequencer.Basic, %{})
+      Whisperer.add_agent("123", MyApp.Agent)
       :ok
   """
   @spec add_agent(String.t(), module()) :: :ok
@@ -53,7 +54,7 @@ defmodule Whisperer do
 
   ## Examples
 
-      iex> Whisperer.process_user_input("123", "Hello, how are you?")
+      Whisperer.process_user_input("123", "Hello, how are you?")
       {:ok, %Whisperer.Message{content: "I'm doing great, thank you!"}}
   """
   @spec process_user_input(String.t(), String.t()) :: {:ok, Message.t()} | {:error, term()}
@@ -64,12 +65,12 @@ defmodule Whisperer do
   @doc """
   Gets the conversation for a session.
 
-  It returns an `:ok` tuple with the conversation history for the session or an `:error` tuple if there was an issue getting the conversation.
+  It returns the conversation history for the session or an `:error` tuple if there was an issue getting the conversation.
 
   ## Examples
 
-      iex> Whisperer.get_conversation("123")
-      {:ok, [%Message{content: "Hello, how are you?"}, %Message{content: "I'm doing great, thank you!"}]}
+      Whisperer.get_conversation("123")
+      [%Whisperer.Message{content: "Hello, how are you?"}, %Whisperer.Message{content: "I'm doing great, thank you!"}]
   """
   @spec get_conversation(String.t()) :: [Message.t()] | {:error, term()}
   def get_conversation(session_id) do
