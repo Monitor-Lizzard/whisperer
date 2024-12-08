@@ -74,10 +74,11 @@ defmodule Whisperer.Orchestrator do
   @impl true
   def handle_call({:process_user_input, user_input}, _from, state) do
     with %State{} = state <- add_message(state, :user, user_input),
-         {:ok, %Sequence{} = sequence} <-
+         {:ok, %Sequence{start_agent: start_agent} = sequence} <-
            state.sequencer.create_sequence(user_input, state.characteristics, state.conversations),
+         false <- is_nil(start_agent),
          {:ok, %_{conversations: [response | _]} = state} <-
-           bfs(state, sequence.connections, [sequence.start_agent], MapSet.new()) do
+           bfs(state, sequence.connections, [start_agent], MapSet.new()) do
       {:reply, {:ok, response}, state}
     end
   end

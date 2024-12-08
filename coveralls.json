@@ -1,0 +1,8 @@
+{
+    "coverage_options": {
+      "treat_no_relevant_lines_as_covered": true,
+      "minimum_coverage": 5
+    },
+    "skip_files": ["test/support"]
+  }
+  

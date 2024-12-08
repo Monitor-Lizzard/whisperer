@@ -26,3 +26,5 @@ whisperer-*.tar
 /tmp/
 
 .tool-versions
+
+.DS_Store

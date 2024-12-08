@@ -7,7 +7,15 @@ defmodule Whisperer.MixProject do
       version: "0.1.0",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      aliases: aliases(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ]
     ]
   end
 
@@ -22,7 +30,14 @@ defmodule Whisperer.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:langchain, "0.3.0-rc.0"}
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.14", only: :test}
+    ]
+  end
+
+  defp aliases do
+    [
+      lint: ["format --check-formatted", "credo --strict"]
     ]
   end
 end

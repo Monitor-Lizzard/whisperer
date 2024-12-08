@@ -7,8 +7,8 @@ defmodule Whisperer.Sequence do
   @type connections :: %{Agent.agent_id() => [Agent.agent_id()]}
 
   @type t :: %__MODULE__{
-          start_agent: Agent.agent_id(),
-          connections: connections()
+          start_agent: Agent.agent_id() | nil,
+          connections: connections() | nil
         }
 
   defstruct ~w[start_agent connections]a
