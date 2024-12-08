@@ -55,7 +55,11 @@ defmodule Whisperer.MixProject do
       main: "Whisperer",
       source_url: "https://github.com/Monitor-Lizzard/whisperer",
       extra_section: "GUIDES",
-      extras: [{"README.md", [title: "Whisperer"]}, {"CHANGELOG.md", [title: "Changelog"]}, {"LICENSE.md", [title: "License"]}],
+      extras: [
+        {"README.md", [title: "Whisperer"]},
+        {"CHANGELOG.md", [title: "Changelog"]},
+        {"LICENSE.md", [title: "License"]}
+      ],
       groups_for_modules: [
         Agent: [
           Whisperer.Agent
