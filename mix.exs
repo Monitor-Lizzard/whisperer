@@ -39,6 +39,7 @@ defmodule Whisperer.MixProject do
   defp deps do
     [
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:excoveralls, "~> 0.14", only: :test}
     ]
   end
@@ -54,7 +55,7 @@ defmodule Whisperer.MixProject do
       main: "Whisperer",
       source_url: "https://github.com/Monitor-Lizzard/whisperer",
       extra_section: "GUIDES",
-      extras: [{"README.md", [title: "Agens"]}, {"CHANGELOG.md", [title: "Changelog"]}, "LICENSE"],
+      extras: [{"README.md", [title: "Whisperer"]}, {"CHANGELOG.md", [title: "Changelog"]}, {"LICENSE.md", [title: "License"]}],
       groups_for_modules: [
         Agent: [
           Whisperer.Agent
