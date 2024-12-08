@@ -11,6 +11,8 @@
 
 ##  Workflow Structure
 
+![Workflow Struture](https://raw.githubusercontent.com/Monitor-Lizzard/whisperer/main/img/flow.png)
+
 ## Key Components 
 
 ### Orchestrator
