@@ -1,7 +1,9 @@
 # Whisperer
 
-**Whisperer is an unopionated multi-agent framework in Elixir**
+[![Actions Status](https://github.com/monitor-lizzard/whisperer/workflows/CI/badge.svg)](https://github.com/Monitor-Lizzard/whisperer/actions?query=workflow:CI) [![Hex.pm](https://img.shields.io/hexpm/v/whisperer.svg)](https://hex.pm/packages/whisperer) [![Documentation](https://img.shields.io/badge/documentation-gray)](https://hexdocs.pm/whisperer)
 
+
+**Whisperer is an unopionated multi-agent framework in Elixir**
 
 ## Features
 - **No-batteries-included**: With Whisperer, you can build your own agents with any implementations and logic you want
