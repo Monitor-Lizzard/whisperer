@@ -30,7 +30,77 @@ A Message is a data structure that is sent between agents. Messages can contain 
 A Sequence is a collection of agents that are executed in a specific order. Sequences can be used to model complex workflows and orchestrate the work of multiple agents.
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `whisperer` to your list of dependencies in `mix.exs`:
+by adding `whisperer` to your list of dependencies in `mix.exs`
+
+## Usage
+
+`1. Implement a Sequencer`
+```elixir
+defmodule MultiAgentDemo.Simple.Sequencer do
+  @moduledoc false
+
+  alias Whisperer.Sequence
+  @behaviour Whisperer.Sequencer
+
+  @impl true
+  def create_sequence(_content, _characteristics, _conversation_history) do
+    {:ok,
+     %Sequence{
+       start_agent: "bracket",
+       connections: %{
+         "bracket" => ["division"],
+         "division" => ["multiplication"],
+         "multiplication" => ["addition"],
+         "addition" => ["subtraction"]
+       }
+     }}
+  end
+end
+```
+
+`2: Initialize the Workflow`
+```elixir
+{:ok, _} = Whisperer.start_session(session_id, MultiAgentDemo.Simple.Sequencer, %{})
+```
+`3: Implement agents`
+```elixir
+defmodule MultiAgentDemo.Simple.Agents.Division do
+  @moduledoc false
+
+  @agent_id "division"
+
+  @behaviour Whisperer.Agent
+
+  @impl true
+  def characteristics do
+    %{
+      id: @agent_id,
+      name: "Division Agent",
+      description: "Specializes in dividing numbers",
+      capabilities: ["math", "division"]
+    }
+  end
+
+  @impl true
+  def process_message(%_{content: content}, _context, _conversation_history) do
+    with result <- solve_division(content) do
+      {:ok, %Whisperer.Message{content: result, agent_id: @agent_id, role: :assistant}}
+    end
+  end
+end
+```
+`4: Add implemented agents to the workflow`
+```elixir
+Whisperer.add_agent(session_id, MultiAgentDemo.Simple.Agents.Division)
+```
+`5: Evaluate User Input`
+```elixir
+Whisperer.process_user_input(session_id, content)
+```
+
+## Demos
+
+A demo app for the BODMAS mathematics problem containing two implementations, an algorithmic implementation and an LLM implementation has been created [here](https://github.com/Monitor-Lizzard/multiagent-demo)
 
 ```elixir
 def deps do
